@@ -13,6 +13,8 @@ export const LOOKS = {
     markings: 'plain',
     earTip: '#f3a35c',
     tailTip: '#f3a35c',
+    cheekTufts: 2,
+    eyeStyle: 'round',
   },
   female: {
     fur: '#c8bce4',
@@ -23,6 +25,9 @@ export const LOOKS = {
     innerEar: '#fff0dc',
     markings: 'plain',
     paw: '#fff0dc',
+    cheekTufts: 0,
+    eyeStyle: 'almond',
+    iris: '#f2b33d',
   },
   kid: {
     fur: '#a9b8c9',
@@ -34,6 +39,7 @@ export const LOOKS = {
     markings: 'socks',
     cap: '#3f7fd6',
     scaleHead: 1.1,
+    cheekTufts: 1,
   },
   commuterA: {
     fur: '#d9cbb8',

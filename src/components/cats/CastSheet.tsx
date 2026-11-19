@@ -40,8 +40,9 @@ export const CastSheet: React.FC = () => {
         <Label x={1130} y={1062}>soft smile</Label>
         <KidCat x={1420} y={1010} scale={0.5} frame={frame} face={{eyes: 'angry', mouth: 'shout', brow: 1, ears: 'flat'}} pose={{armR: 160}} />
         <Label x={1420} y={1062}>tricycle kid</Label>
-        <MaleCat x={1700} y={1010} scale={0.62} frame={frame} face={{eyes: 'heart', mouth: 'grin', ears: 'perk', blush: 0.8}} />
-        <Label x={1700} y={1062}>smitten</Label>
+        <MaleCat x={1640} y={1010} scale={0.62} frame={frame} pose={{handScale: 1.6, armR: 70}} holdingR="earbud" face={{eyes: 'heart', mouth: 'grin', ears: 'perk', blush: 0.8}} />
+        <FemaleCat x={1820} y={1010} scale={0.62} frame={frame} facing={-1} earbud face={{eyes: 'half', mouth: 'smirk', blush: 0.4, lookX: 1}} />
+        <Label x={1730} y={1062}>shared earbud</Label>
       </svg>
     </AbsoluteFill>
   );
