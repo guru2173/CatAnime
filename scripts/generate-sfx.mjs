@@ -207,3 +207,8 @@ const thump = (pitch, len, gain) => {
 
 console.log('🎧 Synthesized SFX → public/sfx/');
 for (const m of made) console.log('  •', m);
+
+// Also (re)build the procedural placeholder score unless --no-music is passed.
+if (!process.argv.includes('--no-music')) {
+  await import('./generate-music.mjs');
+}

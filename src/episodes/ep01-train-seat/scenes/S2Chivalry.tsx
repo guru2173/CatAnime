@@ -57,8 +57,8 @@ export const S2Chivalry: React.FC = () => {
               {...place(c, [FX, 0, FZ], 1.45)}
               frame={f}
               facing={-1}
-              holdingR="book"
-              pose={{...idle(f, 2), armR: 30, headTilt: please ? 8 : 0}}
+              earbud
+              pose={{...idle(f, 2), headTilt: please ? 8 : 0}}
               face={glance ? {eyes: 'normal', lookX: 1, mouth: 'neutral'} : please ? {eyes: 'normal', lookX: 1, mouth: 'neutral', brow: -0.4} : {eyes: 'dot', lookY: 0.7, mouth: 'neutral'}}
             />
           </>
@@ -156,8 +156,8 @@ export const S2Chivalry: React.FC = () => {
                   {...fe}
                   frame={f}
                   facing={-1}
-                  holdingR="book"
-                  pose={{...idle(f, 2), armR: 30}}
+                  earbud
+                  pose={idle(f, 2)}
                   face={hit ? {eyes: 'dot', lookY: 0.7, mouth: 'neutral'} : {eyes: 'normal', lookX: 1, mouth: 'neutral'}}
                 />
                 {earbudFlying ? <Earbud x={bx} y={by} s={fe.scale * 0.9} rot={rot} /> : null}
@@ -178,13 +178,13 @@ export const S2Chivalry: React.FC = () => {
         {(c) => {
           const fe = place(c, [FX, 0, FZ], 1.45);
           const m = place(c, [MX, 0, MZ], 1.5);
-          const bud = project(c, [FX - 0.05, 0.03, FZ + 0.12]);
+          const bud = project(c, [FX - 0.22, 0.03, FZ + 0.1]);
           const glint = within(f, B.insert[0] + 30, B.insert[0] + 60) ? 1.4 : 0;
           return (
             <>
               <MaleCat {...m} frame={f} pose={{...idle(f), lean: 30, headTilt: 10}} face={{eyes: 'wide', lookY: 1, lookX: 0.6, mouth: 'o', ears: 'perk'}} />
-              <Earbud x={bud.x} y={bud.y} s={bud.pxPerUnit / 300} rot={90} glint={glint} />
-              <FemaleCat {...fe} frame={f} facing={-1} holdingR="book" pose={{...idle(f, 2), armR: 30}} face={{eyes: 'dot', lookY: 0.7}} />
+              <Earbud x={bud.x} y={bud.y} s={bud.pxPerUnit / 190} rot={90} glint={glint} />
+              <FemaleCat {...fe} frame={f} facing={-1} earbud pose={idle(f, 2)} face={{eyes: 'dot', lookY: 0.7}} />
               <Sparkles frame={G} count={4} seed="bud" area={[bud.x - 60, bud.y - 80, 120, 80]} amount={glint ? 1 : 0} />
             </>
           );
@@ -196,7 +196,7 @@ export const S2Chivalry: React.FC = () => {
   /* ---------------- Shot 2E: her close-up — looks up, slow blink, tilt, smirk ---------------- */
   if (G < B.herLook[1]) {
     const L = G - B.herLook[0];
-    const cam = faceCam(FX, FZ, 1.25 - ramp(L, [0, 170]) * 0.2, 38, 1.32, -0.25);
+    const cam = faceCam(FX, FZ, 1.9 - ramp(L, [0, 170]) * 0.3, 40, 1.28, -0.25);
     const lookingUp = L >= 22;
     const blink = L >= 50 && L < 74;
     const smirk = L >= 95;
@@ -210,8 +210,8 @@ export const S2Chivalry: React.FC = () => {
               {...place(c, [FX, 0, FZ], 1.45)}
               frame={f}
               facing={-1}
-              holdingR="book"
-              pose={{...idle(f, 2), armR: 30, headTilt: smirk ? 9 : 0}}
+              earbud
+              pose={{...idle(f, 2), headTilt: smirk ? 9 : 0}}
               face={{eyes: eyes as 'normal', lookX: lookingUp ? 1 : 0, lookY: lookingUp ? 0 : 0.7, mouth: smirk ? 'smirk' : 'neutral', blush: smirk ? 0.35 : 0}}
             />
           </>
@@ -223,7 +223,7 @@ export const S2Chivalry: React.FC = () => {
   /* ---------------- Shot 2F: his close-up — blush overload ---------------- */
   if (G < B.blush[1]) {
     const L = G - B.blush[0];
-    const cam = faceCam(MX, MZ, 1.3 - ramp(L, [0, 220]) * 0.25, 38, 1.32, 0.2);
+    const cam = faceCam(MX, MZ, 2.1 - ramp(L, [0, 220]) * 0.35, 40, 1.28, 0.2);
     const red = ramp(L, [40, 120]);
     const tremble = L > 120 ? noise(`tr${f}`) * 3 : 0;
     return (
@@ -290,8 +290,8 @@ export const S2Chivalry: React.FC = () => {
                 {...place(c, [FX, 0, FZ], 1.45)}
                 frame={f}
                 facing={-1}
-                holdingR="book"
-                pose={{...idle(f, 2), armL: 6 + offer * 80, armR: 30, lean: -jolt * 0.3, headTilt: 8}}
+                earbud
+                pose={{...idle(f, 2), armL: 6 + offer * 80, lean: -jolt * 0.3, headTilt: 8, handScale: 1 + offer * 0.3}}
                 face={{eyes: offer > 0.5 ? 'happy' : 'normal', lookX: 1, mouth: 'smile', blush: 0.3}}
               />
             </>
@@ -304,7 +304,7 @@ export const S2Chivalry: React.FC = () => {
   /* ---------------- Shot 2H: overthinking push-in, Dutch tilt, heartbeat ---------------- */
   const L = G - B.spiralPush[0];
   const p = ramp(L, [0, 185], [0, 1], Easing.in(Easing.quad));
-  const cam = faceCam(-0.75, FZ, 1.6 - p * 0.75, 40 - p * 8, 1.32);
+  const cam = faceCam(-0.75, FZ, 2.3 - p * 0.9, 42 - p * 8, 1.3);
   const beats = [1480, 1530, 1570, 1600, 1622, 1640];
   const hb = beats.reduce((a, b) => a + (G >= b ? Math.exp(-(G - b) / 4) : 0), 0);
   const flash = ramp(G, [SCENES.s2.to - 6, SCENES.s2.to]);

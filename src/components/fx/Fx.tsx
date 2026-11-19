@@ -289,3 +289,124 @@ export const TitleText: React.FC<{text: string; sub?: string; opacity: number; y
     </AbsoluteFill>
   );
 };
+
+/** Scalloped thought cloud; children are clipped inside it. */
+export const ThoughtCloud: React.FC<{
+  cx: number;
+  cy: number;
+  rx: number;
+  ry: number;
+  frame: number;
+  scale?: number;
+  trail?: [number, number];
+  id?: string;
+  children?: React.ReactNode;
+}> = ({cx, cy, rx, ry, frame, scale = 1, trail, id = 'tc', children}) => {
+  const n = 14;
+  const d = drawingIndex(frame);
+  const pts = Array.from({length: n}).map((_, i) => {
+    const a = (i / n) * Math.PI * 2;
+    return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry] as const;
+  });
+  let path = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < n; i++) {
+    const p = pts[i];
+    const q = pts[(i + 1) % n];
+    const mx = (p[0] + q[0]) / 2;
+    const my = (p[1] + q[1]) / 2;
+    const ox = (mx - cx) * 0.32 + noise(`tcb${i}-${d}`) * 3;
+    const oy = (my - cy) * 0.32 + noise(`tcc${i}-${d}`) * 3;
+    path += ` Q ${mx + ox} ${my + oy} ${q[0]} ${q[1]}`;
+  }
+  path += ' Z';
+  return (
+    <g transform={`translate(${cx} ${cy}) scale(${scale}) translate(${-cx} ${-cy})`}>
+      {trail
+        ? [0, 1, 2].map((k) => {
+            const t = (k + 1) / 4;
+            const x = trail[0] + (cx - rx * 0.6 - trail[0]) * t;
+            const y = trail[1] + (cy + ry * 0.7 - trail[1]) * t;
+            return <ellipse key={k} cx={x} cy={y} rx={10 + k * 9} ry={8 + k * 7} fill="#fff" stroke={INK} strokeWidth={5} />;
+          })
+        : null}
+      <clipPath id={`clip-${id}`}>
+        <path d={path} />
+      </clipPath>
+      <path d={path} fill="#fff" />
+      <g clipPath={`url(#clip-${id})`}>{children}</g>
+      <path d={path} fill="none" stroke={INK} strokeWidth={7} strokeLinejoin="round" />
+    </g>
+  );
+};
+
+export const MusicNote: React.FC<{x: number; y: number; s?: number; opacity?: number; color?: string}> = ({x, y, s = 1, opacity = 1, color = '#7a5cc4'}) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`} opacity={opacity}>
+    <path d="M 0 0 L 0 -42 L 26 -50 L 26 -8" fill="none" stroke={INK} strokeWidth={7} strokeLinejoin="round" />
+    <path d="M 0 0 L 0 -42 L 26 -50 L 26 -8" fill="none" stroke={color} strokeWidth={3} strokeLinejoin="round" />
+    <ellipse cx={-8} cy={2} rx={11} ry={8} fill={color} stroke={INK} strokeWidth={4} transform="rotate(-20 -8 2)" />
+    <ellipse cx={18} cy={-6} rx={11} ry={8} fill={color} stroke={INK} strokeWidth={4} transform="rotate(-20 18 -6)" />
+  </g>
+);
+
+/** Overthinking icons orbiting the head: ring, house, baby bottle, clock, bills. */
+export const PanicOrbit: React.FC<{frame: number; x: number; y: number; r: number; amount?: number}> = ({frame, x, y, r, amount = 1}) => {
+  if (amount <= 0) return null;
+  const icons = [
+    // ring
+    (k: string) => (
+      <g key={k}>
+        <circle r={22} fill="none" stroke={INK} strokeWidth={10} />
+        <circle r={22} fill="none" stroke="#f2c230" strokeWidth={5} />
+        <path d="M -10 -28 L 0 -44 L 10 -28 Z" fill="#bfe8ff" stroke={INK} strokeWidth={4} />
+      </g>
+    ),
+    // house
+    (k: string) => (
+      <g key={k}>
+        <rect x={-24} y={-8} width={48} height={36} fill="#f6d36b" stroke={INK} strokeWidth={5} />
+        <path d="M -32 -6 L 0 -34 L 32 -6 Z" fill="#c86a5a" stroke={INK} strokeWidth={5} strokeLinejoin="round" />
+        <rect x={-6} y={8} width={12} height={20} fill="#8b5a3c" stroke={INK} strokeWidth={3} />
+      </g>
+    ),
+    // baby bottle
+    (k: string) => (
+      <g key={k}>
+        <rect x={-14} y={-14} width={28} height={44} rx={8} fill="#fff" stroke={INK} strokeWidth={5} />
+        <rect x={-10} y={-26} width={20} height={12} fill="#9ec9f0" stroke={INK} strokeWidth={4} />
+        <path d="M -6 -26 Q 0 -44 6 -26 Z" fill="#f4a7b9" stroke={INK} strokeWidth={4} />
+      </g>
+    ),
+    // clock
+    (k: string) => (
+      <g key={k}>
+        <circle r={26} fill="#fff" stroke={INK} strokeWidth={6} />
+        <line x1={0} y1={0} x2={0} y2={-16} stroke={INK} strokeWidth={5} strokeLinecap="round" transform={`rotate(${frame * 24})`} />
+        <line x1={0} y1={0} x2={12} y2={0} stroke={INK} strokeWidth={5} strokeLinecap="round" />
+      </g>
+    ),
+    // wedding bells / heart
+    (k: string) => <Heart key={k} x={0} y={0} s={1.3} />,
+    // bills
+    (k: string) => (
+      <g key={k}>
+        <rect x={-26} y={-16} width={52} height={32} rx={4} fill="#b8e0a0" stroke={INK} strokeWidth={5} />
+        <circle r={9} fill="none" stroke={INK} strokeWidth={4} />
+      </g>
+    ),
+  ];
+  const d = drawingIndex(frame);
+  return (
+    <g opacity={amount}>
+      {icons.map((ic, i) => {
+        const a = d * 0.28 + (i / icons.length) * Math.PI * 2;
+        const ix = x + Math.cos(a) * r;
+        const iy = y + Math.sin(a) * r * 0.45;
+        return (
+          <g key={i} transform={`translate(${ix} ${iy}) scale(${0.9 + Math.sin(a) * 0.25}) rotate(${noise(`po${i}-${d}`) * 10})`}>
+            {ic(`i${i}`)}
+          </g>
+        );
+      })}
+    </g>
+  );
+};

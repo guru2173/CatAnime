@@ -108,3 +108,43 @@ export const SeatedCrowd: React.FC<{cam: CamParams; frame: number; empty?: numbe
     })}
   </g>
 );
+
+/** Kid's tiny tricycle (2D). (x,y) = ground point under the seat; s = rig scale. */
+export const Tricycle: React.FC<{x: number; y: number; s: number; spin?: number; facing?: 1 | -1}> = ({x, y, s, spin = 0, facing = 1}) => {
+  const INK = '#141214';
+  const wheel = (cx: number, r: number) => (
+    <g>
+      <circle cx={cx} cy={-r} r={r} fill="#2b2b2e" stroke={INK} strokeWidth={6} />
+      <circle cx={cx} cy={-r} r={r * 0.62} fill="#e6e6e6" stroke={INK} strokeWidth={3} />
+      {[0, 1, 2].map((k) => (
+        <line
+          key={k}
+          x1={cx}
+          y1={-r}
+          x2={cx + Math.cos(spin + (k * Math.PI * 2) / 3) * r * 0.6}
+          y2={-r + Math.sin(spin + (k * Math.PI * 2) / 3) * r * 0.6}
+          stroke={INK}
+          strokeWidth={4}
+        />
+      ))}
+    </g>
+  );
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s * facing} ${s})`}>
+      {wheel(-60, 26)}
+      <path d="M -60 -26 L 10 -56 L 70 -58" stroke={INK} strokeWidth={16} fill="none" strokeLinecap="round" />
+      <path d="M -60 -26 L 10 -56 L 70 -58" stroke="#e8483f" strokeWidth={9} fill="none" strokeLinecap="round" />
+      <path d="M 70 -58 L 66 -120 M 50 -126 L 84 -116" stroke={INK} strokeWidth={10} fill="none" strokeLinecap="round" />
+      <path d="M 70 -58 L 66 -120" stroke="#e8483f" strokeWidth={5} fill="none" />
+      <ellipse cx={-6} cy={-64} rx={30} ry={10} fill="#3a3a3e" stroke={INK} strokeWidth={4} />
+      <circle cx={84} cy={-120} r={8} fill="#f2c230" stroke={INK} strokeWidth={3} />
+      {wheel(70, 42)}
+      {wheel(-36, 22)}
+    </g>
+  );
+};
+
+/** Rotate any 2D layer around a point (lying down, diving, etc.). */
+export const Rot: React.FC<{deg: number; x: number; y: number; children: React.ReactNode}> = ({deg, x, y, children}) => (
+  <g transform={`rotate(${deg} ${x} ${y})`}>{children}</g>
+);

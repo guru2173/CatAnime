@@ -163,8 +163,9 @@ export const buildCamera = (p: CamParams, aspect = 16 / 9) => {
 export const project = (p: CamParams, world: Vec3, width = 1920, height = 1080) => {
   const cam = buildCamera(p, width / height);
   const v = new Vector3(...world).project(cam);
-  const dist = cam.position.distanceTo(new Vector3(...world));
-  const pxPerUnit = height / (2 * dist * Math.tan(((p.fov ?? 45) * Math.PI) / 360));
+  // perspective scale depends on view-space depth (distance along the camera axis), not euclidean distance
+  const depth = Math.max(0.05, -new Vector3(...world).applyMatrix4(cam.matrixWorldInverse).z);
+  const pxPerUnit = height / (2 * depth * Math.tan(((p.fov ?? 45) * Math.PI) / 360));
   return {x: ((v.x + 1) / 2) * width, y: ((1 - v.y) / 2) * height, pxPerUnit, behind: v.z > 1};
 };
 
