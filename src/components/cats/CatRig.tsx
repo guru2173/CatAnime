@@ -58,6 +58,11 @@ export type CatLook = {
   glasses?: boolean;
   backpack?: string | null;
   scaleHead?: number;
+  /** Accent colour on ear tips / tail tip. */
+  earTip?: string | null;
+  tailTip?: string | null;
+  /** Mitten-paw / foot colour (defaults to fur). */
+  paw?: string | null;
   /** Optional little scarf / tie accent. */
   accent?: string | null;
 };
@@ -204,10 +209,10 @@ const Eye: React.FC<{cx: number; cy: number; shape: EyeShape; lookX: number; loo
     case 'half':
       return (
         <g>
-          <ellipse cx={cx} cy={cy} rx={16} ry={20} fill="#fff" stroke={INK} strokeWidth={W} />
-          <circle cx={cx + lookX * 6} cy={cy + 6 + lookY * 3} r={3.6} fill={INK} />
-          <path d={`M ${cx - 19} ${cy} A 19 23 0 0 1 ${cx + 19} ${cy} Z`} fill={lid} />
-          <line x1={cx - 18} y1={cy} x2={cx + 18} y2={cy} {...s} />
+          <ellipse cx={cx} cy={cy} rx={18} ry={23} fill="#fff" stroke={INK} strokeWidth={W} />
+          <circle cx={cx + lookX * 6} cy={cy + 7 + lookY * 3} r={3.4} fill={INK} />
+          <path d={`M ${cx - 21} ${cy} A 21 26 0 0 1 ${cx + 21} ${cy} Z`} fill={lid} />
+          <line x1={cx - 20} y1={cy} x2={cx + 20} y2={cy} {...s} />
         </g>
       );
     case 'sparkle':
@@ -222,15 +227,15 @@ const Eye: React.FC<{cx: number; cy: number; shape: EyeShape; lookX: number; loo
     case 'wide':
       return (
         <g>
-          <ellipse cx={cx + side * 3} cy={cy - 3} rx={23} ry={29} fill="#fff" stroke={INK} strokeWidth={W} />
-          <circle cx={cx + side * 3 + lookX * 10} cy={cy - 3 + lookY * 12} r={3} fill={INK} />
+          <ellipse cx={cx + side * 4} cy={cy - 4} rx={27} ry={34} fill="#fff" stroke={INK} strokeWidth={W} />
+          <circle cx={cx + side * 4 + lookX * 12} cy={cy - 4 + lookY * 14} r={2.4} fill={INK} />
         </g>
       );
     default:
       return (
         <g>
-          <ellipse cx={cx} cy={cy} rx={16} ry={20} fill="#fff" stroke={INK} strokeWidth={W} />
-          <circle cx={cx + lookX * 7} cy={cy + lookY * 9} r={3.8} fill={INK} />
+          <ellipse cx={cx} cy={cy} rx={18} ry={23} fill="#fff" stroke={INK} strokeWidth={W} />
+          <circle cx={cx + lookX * 8} cy={cy + lookY * 10} r={3.4} fill={INK} />
         </g>
       );
   }
@@ -279,7 +284,7 @@ const Mouth: React.FC<{x: number; y: number; shape: MouthShape}> = ({x, y, shape
   }
 };
 
-const earRot = (ears: EarShape, side: -1 | 1) => (ears === 'flat' ? side * -70 : ears === 'droop' ? side * -35 : ears === 'perk' ? side * 4 : 0);
+const earRot = (ears: EarShape, side: -1 | 1) => (ears === 'flat' ? side * 70 : ears === 'droop' ? side * 34 : ears === 'perk' ? side * -4 : 0);
 
 const HeldProp: React.FC<{kind: Holding; x: number; y: number}> = ({kind, x, y}) => {
   switch (kind) {
@@ -370,7 +375,7 @@ const CatRigInner: React.FC<CatRigProps> = ({
   const b = boil(frame, seed, 1.0);
   const bh = boil(frame, seed + 'h', 0.9);
   const {hip: hipY, shoulder: shoulderY, headCY} = rigHead(sit);
-  const hs = (look.scaleHead ?? 1) * 1.22;
+  const hs = (look.scaleHead ?? 1) * 1.4;
   const turn = headTurn * 14;
   const fid = `${seed}-${Math.round(x)}-${Math.round(y)}`;
   const di = drawingIndex(frame);
@@ -402,7 +407,12 @@ const CatRigInner: React.FC<CatRigProps> = ({
   const tailD = taper(tailPts, 14, 9);
   const tailEl = (
     <g transform={`rotate(${tail - 8} -20 ${hipY + 4})`}>
-      <path d={tailD} fill={look.fur} stroke={INK} strokeWidth={W} strokeLinejoin="round" />
+      <clipPath id={`tail-${fid}`}>
+        <path d={tailD} />
+      </clipPath>
+      <path d={tailD} fill={look.fur} />
+      {look.tailTip ? <circle cx={-56} cy={hipY - 112} r={30} fill={look.tailTip} clipPath={`url(#tail-${fid})`} /> : null}
+      <path d={tailD} fill="none" stroke={INK} strokeWidth={W} strokeLinejoin="round" />
     </g>
   );
 
@@ -427,8 +437,8 @@ const CatRigInner: React.FC<CatRigProps> = ({
           {/* mitten: palm + thumb, drawn ink-then-fill so they read as one shape */}
           <ellipse cx={side * -9} cy={2} rx={6} ry={9} transform={`rotate(${side * 30} ${side * -9} 2)`} fill={INK} stroke={INK} strokeWidth={W * 2} />
           <ellipse cx={0} cy={8} rx={11} ry={14} fill={INK} stroke={INK} strokeWidth={W * 2} />
-          <ellipse cx={side * -9} cy={2} rx={6} ry={9} transform={`rotate(${side * 30} ${side * -9} 2)`} fill={look.fur} />
-          <ellipse cx={0} cy={8} rx={11} ry={14} fill={look.fur} />
+          <ellipse cx={side * -9} cy={2} rx={6} ry={9} transform={`rotate(${side * 30} ${side * -9} 2)`} fill={look.paw ?? look.fur} />
+          <ellipse cx={0} cy={8} rx={11} ry={14} fill={look.paw ?? look.fur} />
           <path d={`M ${side * -3} ${14} L ${side * -3} ${20}`} stroke={INK} strokeWidth={2.5} strokeLinecap="round" />
           <path d={`M ${side * 4} ${14} L ${side * 4} ${21}`} stroke={INK} strokeWidth={2.5} strokeLinecap="round" />
         </g>
@@ -502,17 +512,21 @@ const CatRigInner: React.FC<CatRigProps> = ({
 
   const earEl = (side: -1 | 1) => {
     const bx = side * 34 + turn * 0.3;
-    const by = hc - hry + 12;
-    const perk = ears === 'perk' ? 14 : 0;
-    const outer = `M ${bx - side * 24} ${by + 6} Q ${bx + side * 2} ${by - 40} ${bx + side * 10} ${by - 70 - perk} Q ${bx + side * 30} ${by - 30} ${bx + side * 30} ${by + 10} Z`;
-    const inner = `M ${bx - side * 10} ${by} Q ${bx + side * 6} ${by - 30} ${bx + side * 10} ${by - 50 - perk} Q ${bx + side * 20} ${by - 22} ${bx + side * 18} ${by + 2} Z`;
-    let earFill = look.fur;
-    if (look.markings === 'calico') earFill = side === -1 ? look.patchA! : look.patchB!;
-    if (look.markings === 'tabby') earFill = look.furShade;
+    const by = hc - hry + 14;
+    const H = ears === 'perk' ? 98 : ears === 'flat' ? 60 : 80; // tall, expressive
+    const outer = `M ${bx - side * 24} ${by + 6} Q ${bx + side * 0} ${by - H * 0.55} ${bx + side * 8} ${by - H} Q ${bx + side * 32} ${by - H * 0.45} ${bx + side * 30} ${by + 10} Z`;
+    const inner = `M ${bx - side * 10} ${by} Q ${bx + side * 4} ${by - H * 0.45} ${bx + side * 8} ${by - H * 0.72} Q ${bx + side * 20} ${by - H * 0.32} ${bx + side * 18} ${by + 2} Z`;
+    const clipId = `ear-${fid}-${side}`;
+    const twitch = ears === 'perk' ? Math.sin(frame * 1.7 + side) * 3 : 0;
     return (
-      <g transform={`rotate(${earRot(ears, side)} ${bx} ${by + 6})`}>
-        <path d={outer} fill={earFill} stroke={INK} strokeWidth={W} strokeLinejoin="round" />
+      <g transform={`translate(${ears === 'flat' ? side * -6 : 0} ${ears === 'flat' ? 30 : ears === 'droop' ? 10 : 0}) rotate(${earRot(ears, side) + twitch} ${bx + side * 26} ${by + 8})`}>
+        <clipPath id={clipId}>
+          <path d={outer} />
+        </clipPath>
+        <path d={outer} fill={look.fur} />
+        {look.earTip ? <circle cx={bx + side * 8} cy={by - H} r={H * 0.3} fill={look.earTip} clipPath={`url(#${clipId})`} /> : null}
         <path d={inner} fill={redFace > 0.3 ? '#ff7a7a' : look.innerEar} />
+        <path d={outer} fill="none" stroke={INK} strokeWidth={W} strokeLinejoin="round" />
       </g>
     );
   };
@@ -623,7 +637,7 @@ const CatRigInner: React.FC<CatRigProps> = ({
           ))}
           <path d={bodyPath} transform={`rotate(${lean} 0 ${hipY})`} fill={INK} stroke={INK} strokeWidth={W * 2} strokeLinejoin="round" />
           {legShapes.map((l, i) => (
-            <g key={`lf${i}`} fill={look.markings === 'socks' ? '#ffffff' : look.fur}>
+            <g key={`lf${i}`} fill={look.markings === 'socks' ? '#ffffff' : (look.paw ?? look.fur)}>
               <path d={l.d} fill={look.fur} />
               <path d={l.foot} />
             </g>
