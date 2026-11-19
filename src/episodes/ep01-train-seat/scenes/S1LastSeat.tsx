@@ -86,8 +86,8 @@ export const S1LastSeat: React.FC = () => {
                   {...fe}
                   frame={f}
                   facing={-1}
-                  holdingR="book"
-                  pose={{...idle(f, 2), armR: 30, headTilt: blinkF ? 6 : 0}}
+                  earbud
+                  pose={{...idle(f, 2), headTilt: blinkF ? 6 : 0}}
                   face={{eyes: blinkF ? (f < 344 ? 'half' : 'shut') : 'normal', lookX: 1, mouth: blinkF ? 'smile' : 'neutral', blush: 0.4}}
                 />
               </>
@@ -146,8 +146,8 @@ export const S1LastSeat: React.FC = () => {
                 {...fe}
                 frame={f}
                 facing={-1}
-                holdingR="book"
-                pose={{...femPose, armR: 30 + (femPose.armR ?? 0) * 0.3}}
+                earbud
+                pose={femPose}
                 face={shock ? {eyes: 'normal', lookX: 1, mouth: 'neutral', blush: 0.3} : femFace}
               />) : null}
             </>

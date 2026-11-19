@@ -92,7 +92,7 @@ export const Camera3D: React.FC<Camera3DProps> = ({position, lookAt, fov = 45, r
     const jy = smoothNoise(frame * 0.9 + 9, 'c3-y') * shake + smoothNoise(frame / 33, 'c3-hy') * handheld;
     camera.position.set(position[0] + jx, position[1] + jy, position[2]);
     camera.fov = fov;
-    camera.near = 0.05;
+    camera.near = 0.1;
     camera.far = 600;
     camera.lookAt(lookAt[0] + jx * 0.5, lookAt[1] + jy * 0.5, lookAt[2]);
     if (roll) camera.rotateZ((roll * Math.PI) / 180);
