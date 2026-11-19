@@ -1,0 +1,8 @@
+node_modules/
+out/*.mp4
+out/*.mov
+out/**/*.mp4
+.DS_Store
+*.log
+# Drop-in licensed music tracks (see README) are not committed
+public/music/mvt*.mp3
